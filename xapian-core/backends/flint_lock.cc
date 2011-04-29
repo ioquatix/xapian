@@ -2,6 +2,7 @@
  * @brief Flint-compatible database locking.
  */
 /* Copyright (C) 2005,2006,2007,2008,2009,2010 Olly Betts
+ * Copyright (C) 2011 Samuel Williams
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -193,6 +194,9 @@ FlintLock::lock(bool exclusive, string & explanation) {
 	}
 	closefrom(lockfd + 1);
 
+	// Ensure that SIGHUP will be processed correctly.
+	signal(SIGHUP, SIG_DFL);
+	
 	// FIXME: use special statically linked helper instead of cat.
 	execl("/bin/cat", "/bin/cat", static_cast<void*>(NULL));
 	// Emulate cat ourselves (we try to avoid this to reduce VM overhead).
